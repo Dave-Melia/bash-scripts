@@ -1,0 +1,16 @@
+#!/bin/bash
+#Dave Melia - May 19th 2015
+
+read -p "Enter the host (e.g. www.host.com): " host
+read -p "Enter the server (e.g. testweb999.local.domain): " testserv
+
+while read -r src dst; do
+	srcCURL=$(curl -s -H "Host: ${host}" -I "${testserv}${src}" |grep "Location:" | tr -d [[:cntrl:]]) ;
+	dstURL="Location: http://${host}${dst}"
+
+	if [ $? -eq 0 -a "${srcCURL}" == "${dstURL}" ]; then
+		echo -e "[\033[0;32mOK\033[0m]: ${src} \033[0;1mredirects to\033[0m ${dst}";
+	else
+		echo -e "[\033[0;31mERROR\033[0m]: ${src} does not redirect to ${dst}";
+	fi
+done <foo.list
