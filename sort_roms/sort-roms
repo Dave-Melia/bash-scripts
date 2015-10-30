@@ -1,0 +1,123 @@
+#!/bin/bash
+
+DOWNLOADS=~/Downloads
+EXTRACTPATH=$DOWNLOADS/roms
+SYNCDIR=~/roms
+PIUSER=pi
+PIADDRESS=123.4.5.6
+
+ls -1 $DOWNLOADS/*.zip > /dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    mv $DOWNLOADS/*.zip $EXTRACTPATH
+    
+    ls -1 $EXTRACTPATH/*.zip > /dev/null 2>&1
+    
+    if [ $? -eq 0 ]
+    then
+	echo " "
+    	echo -e "[\033[0;32mOK\033[0m]: Zip file(s) successfully moved."
+	echo " "
+
+	sleep 1
+
+	echo " "
+	echo -e "Extracting..."
+	echo " "
+
+	unzip $EXTRACTPATH/'*.zip' > /dev/null 2>&1
+
+	echo " "
+        echo -e "[\033[0;32mOK\033[0m]: Zip file(s) successfully extracted."
+	echo " "
+
+	rm *.zip > /dev/null 2>&1
+    else
+	echo " "
+	echo -e "[\033[0;31mERROR\033[0m]: Couldn't move zip file(s)."
+	echo " "
+    fi
+
+    ls -1 $EXTRACTPATH/*.sms > /dev/null 2>&1
+    if [ $? -eq 0 ]
+    then
+	echo " "
+	echo -e "Moving to Sega Master System directory"
+	echo " "	
+
+	sleep 1
+
+	mv *.sms $SYNCDIR/mastersystem > /dev/null 2>&1
+	
+	echo " "
+	echo -e "[\033[0;32mOK\033[0m]: Done"
+	echo " "
+    fi
+
+    ls -1 $EXTRACTPATH/*.md > /dev/null 2>&1
+    if [ $? -eq 0 ]
+    then
+	echo " "
+	echo -e "Moving to Sega Megadrive directory"
+	echo " "
+
+	sleep 1
+	mv *.md $SYNCDIR/megadrive > /dev/null 2>&1
+	
+	echo " "
+	echo -e "[\033[0;32mOK\033[0m]: Done"
+	echo " "
+    fi
+
+    ls -1 $EXTRACTPATH/*.sfc > /dev/null 2>&1
+    if [ $? -eq 0 ]
+    then
+	echo " "
+	echo -e "Moving to Super Nintendo directory"
+	echo " "
+
+	sleep 1
+
+	mv *.sfc $SYNCDIR/snes > /dev/null 2>&1
+	
+	echo " "
+	echo -e "[\033[0;32mOK\033[0m]: Done"
+	echo " "
+    fi
+    
+    ls -1 $EXTRACTPATH/*.gb > /dev/null 2>&1
+    if [ $? -eq 0 ]
+    then
+	echo " "
+	echo -e "Moving to Gameboy directory"
+	echo " "
+
+	sleep 1
+
+	mv *.gb $SYNCDIR/gb > /dev/null 2>&1
+	
+	echo " "
+	echo -e "[\033[0;32mOK\033[0m]: Done"
+	echo " "
+    fi
+
+    echo " "
+    echo "Syncing to the Raspberry Pi..."
+    echo " "
+    rsync -avz $SYNCDIR $PIUSER@$PIADDRESS:/home/pi/RetroPie
+    echo " "
+    echo "Done"
+    echo " "
+else
+    echo " "
+    echo -e "[\033[0;31mERROR\033[0m]: No zip file(s) in $DOWNLOADS"
+    echo " "
+
+    echo " "
+    echo "Syncing to the Raspberry Pi..."
+    echo " "
+    rsync -avz $SYNCDIR $PIUSER@$PIADDRESS:/home/pi/RetroPie
+    echo " "
+    echo "Done"
+    echo " "
+fi
